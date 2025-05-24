@@ -10,7 +10,7 @@ $captcha_input = $_POST['captcha'] ?? '';
 
 if ($action === 'login') {
     if (!$username || !$password) {
-        $_SESSION['error'] = "Vui lòng nhập đầy đủ thông tin.";
+        $_SESSION['error'] = "Vui lòng nhập đầy đủ thông tin."; 
         header("Location: login.php");
         exit;
     }

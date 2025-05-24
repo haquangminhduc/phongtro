@@ -1,10 +1,12 @@
 <?php
+session_start();
 require_once 'config.php';
 
 // Handle search
 $search_query = isset($_GET['query']) ? trim($_GET['query']) : '';
 $city = isset($_GET['city']) ? trim($_GET['city']) : '';
 
+// Fetch listings
 $sql = "SELECT * FROM listings WHERE 1=1";
 $params = [];
 
@@ -12,7 +14,7 @@ if (!empty($search_query)) {
     $sql .= " AND title LIKE :query";
     $params[':query'] = "%$search_query%";
 }
-if (!empty($city) && $city != 'all') {
+if (!empty($city) && $city != 'Toàn quốc') {
     $sql .= " AND city = :city";
     $params[':city'] = $city;
 }
@@ -20,6 +22,9 @@ if (!empty($city) && $city != 'all') {
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $listings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch username from session (set during login)
+$username = isset($_SESSION['full_name']) ? $_SESSION['full_name'] : "";
 ?>
 
 <!DOCTYPE html>
@@ -43,9 +48,15 @@ $listings = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <a href="#">Tìm người ở ghép</a>
     </div>
     <div class="auth-buttons">
-      <a href="#" class="login">Đăng nhập</a>
-      <a href="#" class="register">Đăng ký</a>
-      <a href="#" class="post">Đăng tin</a>
+      <?php if (isset($_SESSION['user_id'])): ?>
+        <span class="greeting">Chào <?php echo htmlspecialchars($username); ?></span>
+        <a href="logout.php" class="login">Đăng xuất</a>
+        <a href="post.php" class="post">Đăng tin</a>
+      <?php else: ?>
+        <a href="login.php" class="login">Đăng nhập</a>
+        <a href="register.php" class="register">Đăng ký</a>
+        <a href="javascript:alert('Vui lòng đăng nhập để đăng tin!');" class="post">Đăng tin</a>
+      <?php endif; ?>
     </div>
   </div>
 
@@ -54,7 +65,7 @@ $listings = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <form class="search-bar" method="GET" action="">
       <input type="text" name="query" placeholder="Tìm kiếm phòng trọ, nhà nguyên căn, căn hộ..." value="<?php echo htmlspecialchars($search_query); ?>">
       <select name="city">
-        <option value="all" <?php echo $city == 'all' || empty($city) ? 'selected' : ''; ?>>Toàn quốc</option>
+        <option value="Toàn quốc" <?php echo $city == 'Toàn quốc' || empty($city) ? 'selected' : ''; ?>>Toàn quốc</option>
         <option value="Hồ Chí Minh" <?php echo $city == 'Hồ Chí Minh' ? 'selected' : ''; ?>>TP. Hồ Chí Minh</option>
         <option value="Hà Nội" <?php echo $city == 'Hà Nội' ? 'selected' : ''; ?>>Hà Nội</option>
         <option value="Đà Nẵng" <?php echo $city == 'Đà Nẵng' ? 'selected' : ''; ?>>Đà Nẵng</option>
@@ -62,12 +73,12 @@ $listings = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <button type="submit">Tìm kiếm</button>
     </form>
     <div class="filters">
-      <a href="?">Tất cả</a>
-      <a href="?query=phòng trọ">Phòng trọ</a>
-      <a href="?query=nhà nguyên căn">Nhà nguyên căn</a>
-      <a href="?query=căn hộ">Căn hộ</a>
-      <a href="?query=ở ghép">Ở ghép</a>
-      <a href="?">Đặt lại</a>
+      <a href="?city=Toàn quốc">Tất cả</a>
+      <a href="?query=phòng trọ&city=Toàn quốc">Phòng trọ</a>
+      <a href="?query=nhà nguyên căn&city=Toàn quốc">Nhà nguyên căn</a>
+      <a href="?query=căn hộ&city=Toàn quốc">Căn hộ</a>
+      <a href="?query=ở ghép&city=Toàn quốc">Ở ghép</a>
+      <a href="?city=Toàn quốc">Đặt lại</a>
     </div>
   </div>
 

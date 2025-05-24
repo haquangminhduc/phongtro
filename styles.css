@@ -42,6 +42,11 @@ body {
   color: #e63946;
 }
 
+.auth-buttons {
+  display: flex;
+  align-items: center;
+}
+
 .auth-buttons a {
   margin-left: 10px;
   text-decoration: none;
@@ -60,6 +65,12 @@ body {
 
 .auth-buttons .post {
   background-color: #e63946;
+}
+
+.auth-buttons .greeting {
+  margin-left: 10px;
+  font-size: 16px;
+  color: #333;
 }
 
 /* Search Section */
